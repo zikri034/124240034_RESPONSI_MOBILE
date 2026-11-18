@@ -147,7 +147,7 @@ class ProfileView extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'Praktikum Pemrograman Aplikasi Mobile sangat menantang dan memberikan wawasan komprehensif mengenai arsitektur modern Flutter, manajemen state GetX, integrasi REST API, dan persistensi data lokal.',
+                      'Praktikum Pemrograman Aplikasi Mobile sangat menantang dan memberikan pengalaman yang asik nan bikin pusing bjirlah.',
                       style: TextStyle(
                         fontSize: 13,
                         height: 1.5,
@@ -197,7 +197,7 @@ class ProfileView extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'Semoga modul dan latihan responsi terus diperbarui dengan standar industri terkini. Terima kasih banyak kepada seluruh asisten praktikum dan dosen pengampu atas bimbingan serta ilmunya yang sangat bermanfaat!',
+                      'sekian terimakasih sampai jumpa di lain hari',
                       style: TextStyle(
                         fontSize: 13,
                         height: 1.5,

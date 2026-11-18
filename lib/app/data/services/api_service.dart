@@ -5,18 +5,22 @@ import '../data_sources/default_products_data.dart';
 import '../models/product_model.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://dummyjson.com';
+  static const String baseUrl = 'https://fakestoreapi.com';
 
   Future<List<Product>> fetchProducts() async {
-    final uri = Uri.parse('$baseUrl/products?limit=100');
+    final uri = Uri.parse('$baseUrl/products');
     try {
       final response = await http
           .get(uri)
-          .timeout(const Duration(seconds: 2));
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        final List<dynamic> productsJson = data['products'] as List<dynamic>? ?? [];
+        final dynamic decoded = json.decode(response.body);
+        final List<dynamic> productsJson = decoded is List<dynamic>
+            ? decoded
+            : (decoded is Map<String, dynamic>
+                ? (decoded['products'] as List<dynamic>? ?? [])
+                : []);
         return productsJson
             .map((item) => Product.fromJson(item as Map<String, dynamic>))
             .toList();
@@ -35,7 +39,7 @@ class ApiService {
     try {
       final response = await http
           .get(uri)
-          .timeout(const Duration(seconds: 2));
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -50,10 +54,8 @@ class ApiService {
   }
 
   List<Product> getDefaultProducts() {
-    final List<dynamic> productsJson =
-        defaultProductsJson['products'] as List<dynamic>? ?? [];
-    return productsJson
-        .map((item) => Product.fromJson(item as Map<String, dynamic>))
+    return defaultProductsData
+        .map((item) => Product.fromJson(item))
         .toList();
   }
 
@@ -61,7 +63,16 @@ class ApiService {
     final products = getDefaultProducts();
     return products.firstWhere(
       (p) => p.id == id,
-      orElse: () => products.first,
+      orElse: () => products.isNotEmpty
+          ? products.first
+          : Product(
+              id: 1,
+              title: 'Default Product',
+              description: '',
+              price: 0,
+              thumbnail: '',
+              stock: 20,
+            ),
     );
   }
 }

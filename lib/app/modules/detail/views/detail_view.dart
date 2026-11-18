@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../../data/data_sources/default_products_data.dart';
 import '../../../data/models/product_model.dart';
+import '../../../data/services/api_service.dart';
 import '../../../theme/app_theme.dart';
 import '../../cart/controllers/cart_controller.dart';
 import '../../cart/views/cart_view.dart';
@@ -39,34 +38,10 @@ class _DetailViewState extends State<DetailView> {
     if (arg is Product) return arg;
     if (arg is Map<String, dynamic>) return Product.fromJson(arg);
     if (arg is int) {
-      final List<dynamic> productsList =
-          defaultProductsJson['products'] as List<dynamic>? ?? [];
-      final match = productsList.firstWhere(
-        (p) => (p as Map)['id'] == arg,
-        orElse: () => productsList.isNotEmpty ? productsList.first : null,
-      );
-      if (match != null) return Product.fromJson(match as Map<String, dynamic>);
+      return ApiService().getDefaultProductById(arg);
     }
 
-    final List<dynamic> productsList =
-        defaultProductsJson['products'] as List<dynamic>? ?? [];
-    if (productsList.isNotEmpty) {
-      return Product.fromJson(productsList.first as Map<String, dynamic>);
-    }
-
-    return Product(
-      id: 1,
-      title: 'Essence Mascara Lash Princess',
-      description:
-          'The Essence Mascara Lash Princess is a popular mascara known for its volumizing and lengthening effects.',
-      price: 9.99,
-      discountPercentage: 10.48,
-      rating: 4.5,
-      stock: 99,
-      category: 'beauty',
-      brand: 'Essence',
-      thumbnail: '',
-    );
+    return ApiService().getDefaultProductById(1);
   }
 
   void _increment() {
@@ -578,12 +553,6 @@ class _DetailViewState extends State<DetailView> {
                             ),
                             child: Column(
                               children: [
-                                _buildSpecItem(
-                                  Icons.qr_code,
-                                  'SKU',
-                                  product.sku ??
-                                      'PRD-${product.id.toString().padLeft(3, '0')}',
-                                ),
                                 _buildSpecItem(
                                   Icons.category_outlined,
                                   'Kategori',

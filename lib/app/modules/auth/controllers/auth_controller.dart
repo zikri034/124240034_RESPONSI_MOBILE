@@ -62,7 +62,7 @@ class AuthController extends GetxController {
 
     Get.snackbar(
       'Berhasil Masuk',
-      'Selamat datang di Toko Awikwok, $cleanUser!',
+      'Selamat datang di Toko Jomoks, $cleanUser!',
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: const Color(0xFF2196F3),
       colorText: Colors.white,

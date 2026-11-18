@@ -94,6 +94,31 @@ void main() {
       expect(product.rating, 0.0);
       expect(product.brand, null);
     });
+
+    test('Product.fromJson parses FakeStoreAPI format correctly', () {
+      final fakeStoreJson = {
+        'id': 1,
+        'title': 'Fjallraven Backpack',
+        'price': 109.95,
+        'description': 'Your perfect pack',
+        'category': "men's clothing",
+        'image': 'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png',
+        'rating': {
+          'rate': 3.9,
+          'count': 120,
+        },
+      };
+
+      final product = Product.fromJson(fakeStoreJson);
+
+      expect(product.id, 1);
+      expect(product.title, 'Fjallraven Backpack');
+      expect(product.price, 109.95);
+      expect(product.thumbnail, 'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png');
+      expect(product.images, contains('https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png'));
+      expect(product.rating, 3.9);
+      expect(product.stock > 0, true);
+    });
   });
 
   group('CartItem Model Test', () {

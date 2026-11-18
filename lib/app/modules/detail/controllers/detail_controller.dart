@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import '../../../data/data_sources/default_products_data.dart';
 import '../../../data/models/product_model.dart';
 import '../../../data/services/api_service.dart';
 import '../../cart/controllers/cart_controller.dart';
@@ -50,11 +49,7 @@ class DetailController extends GetxController {
       if (product.value == null) {
         // Fallback dari dataset lokal jika dibuka langsung atau saat hot reload
         try {
-          final List<dynamic> productsList =
-              defaultProductsJson['products'] as List<dynamic>? ?? [];
-          if (productsList.isNotEmpty) {
-            setProduct(Product.fromJson(productsList.first as Map<String, dynamic>));
-          }
+          setProduct(_apiService.getDefaultProductById(1));
         } catch (e) {
           debugPrint('Error loading default fallback product: $e');
         }
@@ -160,7 +155,6 @@ class DetailController extends GetxController {
   double get rating => product.value?.rating ?? 0.0;
   int get stock => product.value?.stock ?? 0;
   String? get brand => product.value?.brand;
-  String? get sku => product.value?.sku;
   int? get weight => product.value?.weight;
   ProductDimensions? get dimensions => product.value?.dimensions;
   String? get warrantyInformation => product.value?.warrantyInformation;

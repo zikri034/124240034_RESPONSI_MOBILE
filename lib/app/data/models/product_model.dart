@@ -74,7 +74,6 @@ class Product {
   final int stock;
   final List<String> tags;
   final String? brand;
-  final String? sku;
   final int? weight;
   final ProductDimensions? dimensions;
   final String? warrantyInformation;
@@ -98,7 +97,6 @@ class Product {
     this.discountPercentage = 0.0,
     this.tags = const [],
     this.brand,
-    this.sku,
     this.weight,
     this.dimensions,
     this.warrantyInformation,
@@ -119,6 +117,12 @@ class Product {
     final rawImages = json['images'] as List<dynamic>? ?? [];
     final List<String> parsedImages = rawImages.map((e) => e.toString()).toList();
 
+    // FakeStoreAPI compatibility: uses single 'image' field
+    final String singleImage = json['image'] as String? ?? '';
+    if (parsedImages.isEmpty && singleImage.isNotEmpty) {
+      parsedImages.add(singleImage);
+    }
+
     final rawTags = json['tags'] as List<dynamic>? ?? [];
     final List<String> parsedTags = rawTags.map((e) => e.toString()).toList();
 
@@ -127,6 +131,33 @@ class Product {
         .map((r) => ProductReview.fromJson(r as Map<String, dynamic>))
         .toList();
 
+    // Rating parsing: support both double/int and FakeStoreAPI map {"rate": 3.9, "count": 120}
+    double parsedRating = 0.0;
+    if (json['rating'] is num) {
+      parsedRating = (json['rating'] as num).toDouble();
+    } else if (json['rating'] is Map) {
+      parsedRating = ((json['rating'] as Map)['rate'] as num?)?.toDouble() ?? 0.0;
+    }
+
+    // Stock parsing:
+    // If 'stock' exists in json, use it.
+    // If coming from FakeStoreAPI (has 'image' or rating is Map), default to 20 so items can be purchased.
+    // Otherwise default to 0 (handles empty json gracefully).
+    int parsedStock = 0;
+    if (json.containsKey('stock')) {
+      parsedStock = (json['stock'] as num?)?.toInt() ?? 0;
+    } else if (json.containsKey('image') || json['rating'] is Map) {
+      if (json['rating'] is Map && (json['rating'] as Map)['count'] != null) {
+        final count = ((json['rating'] as Map)['count'] as num?)?.toInt() ?? 20;
+        parsedStock = count > 0 ? (count % 50) + 5 : 20;
+      } else {
+        parsedStock = 20;
+      }
+    }
+
+    final String parsedThumbnail = json['thumbnail'] as String? ??
+        (singleImage.isNotEmpty ? singleImage : (parsedImages.isNotEmpty ? parsedImages.first : ''));
+
     return Product(
       id: json['id'] as int? ?? 0,
       title: json['title'] as String? ?? '',
@@ -134,11 +165,10 @@ class Product {
       category: json['category'] as String? ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       discountPercentage: (json['discountPercentage'] as num?)?.toDouble() ?? 0.0,
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      stock: (json['stock'] as num?)?.toInt() ?? 0,
+      rating: parsedRating,
+      stock: parsedStock,
       tags: parsedTags,
       brand: json['brand'] as String?,
-      sku: json['sku'] as String?,
       weight: (json['weight'] as num?)?.toInt(),
       dimensions: json['dimensions'] != null
           ? ProductDimensions.fromJson(json['dimensions'] as Map<String, dynamic>?)
@@ -150,7 +180,7 @@ class Product {
       returnPolicy: json['returnPolicy'] as String?,
       minimumOrderQuantity: (json['minimumOrderQuantity'] as num?)?.toInt(),
       images: parsedImages,
-      thumbnail: json['thumbnail'] as String? ?? (parsedImages.isNotEmpty ? parsedImages.first : ''),
+      thumbnail: parsedThumbnail,
     );
   }
 
@@ -166,7 +196,6 @@ class Product {
       'stock': stock,
       'tags': tags,
       'brand': brand,
-      'sku': sku,
       'weight': weight,
       'dimensions': dimensions?.toJson(),
       'warrantyInformation': warrantyInformation,

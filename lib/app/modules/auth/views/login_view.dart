@@ -68,7 +68,7 @@ class _LoginViewState extends State<LoginView> {
                   // App Title & Subtitle
                   const Center(
                     child: Text(
-                      'Toko Awikwok',
+                      'TOKO JOMOKS',
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
@@ -80,7 +80,7 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(height: 8),
                   const Center(
                     child: Text(
-                      'Latihan Responsi Praktikum Pemrograman Bergerak',
+                      'Responsi Praktikum Pemrograman Mobile',
                       style: TextStyle(
                         fontSize: 13,
                         color: AppTheme.textSecondary,
